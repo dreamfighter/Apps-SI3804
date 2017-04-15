@@ -1,9 +1,14 @@
 package com.example.zeger.apps_si3004;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
@@ -34,42 +39,46 @@ import java.util.List;
 
 public class AsyncTaskActivity extends AppCompatActivity{
 
+    // json data url
     private String url = "http://dreamfighter.id/android/data.json";
+
     private AdapterListView adapterListView;
 
     private class DownloadJsonTask extends AsyncTask<String, Integer, String>{
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
         @Override
         protected String doInBackground(String... params) {
+
             return requestJson(params[0]);
         }
 
         @Override
-        protected void onPostExecute(String json) {
-            decodeJson(json);
+        protected void onPostExecute(String s) {
+            decodeJson(s);
         }
     }
 
     public String requestJson(String urlWeb){
         StringBuilder sb = new StringBuilder();
         try {
+
+            // conect to server
             URL url = new URL(urlWeb);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            Reader r = new InputStreamReader(conn.getInputStream());
-            String line;
 
+            // get data
+            InputStream in = new BufferedInputStream(conn.getInputStream());
+
+
+            Reader r = new InputStreamReader(conn.getInputStream());
 
             char[] chars = new char[4*1024];
             int len;
             while((len = r.read(chars))>=0) {
                 sb.append(chars, 0, len);
             }
+
             Log.d("JSON",sb.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -102,6 +111,20 @@ public class AsyncTaskActivity extends AppCompatActivity{
         }
     }
 
+    private class DownloadJsonReciever extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent dataJson) {
+            Bundle bundle = dataJson.getExtras();
+
+            String json = bundle.getString("json");
+
+            decodeJson(json);
+        }
+    }
+
+    private DownloadJsonReciever downloadJsonReciever = new DownloadJsonReciever();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +137,14 @@ public class AsyncTaskActivity extends AppCompatActivity{
 
         listView.setAdapter(adapterListView);
 
+        //requestJson(url);
+
+
+        IntentFilter intenFilter = new IntentFilter("DOWNLOAD_JSON");
+
+        registerReceiver(downloadJsonReciever,intenFilter);
+
+
         Intent intent = new Intent(this, JsonIntentService.class);
 
         startService(intent);
@@ -122,5 +153,6 @@ public class AsyncTaskActivity extends AppCompatActivity{
         //task.execute(url);
 
         //decodeJson(requestJson(url));
+
     }
 }

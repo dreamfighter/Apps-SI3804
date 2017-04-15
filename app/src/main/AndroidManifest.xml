@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DataStoreActivity">
+        <activity android:name=".FirebaseActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,6 +20,18 @@
         <activity android:name=".ListActivity"/>
         <activity android:name=".DetailAtivity"/>
         <service android:name=".service.JsonIntentService" android:exported="false"/>
+
+
+        <receiver
+            android:name="com.example.zeger.apps_si3004.service.GoogleMSReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.example.gcm" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

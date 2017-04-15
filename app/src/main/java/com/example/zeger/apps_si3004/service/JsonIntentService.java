@@ -1,9 +1,14 @@
 package com.example.zeger.apps_si3004.service;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.zeger.apps_si3004.R;
 import com.example.zeger.apps_si3004.entity.Contact;
 
 import org.json.JSONArray;
@@ -45,7 +50,37 @@ public class JsonIntentService extends IntentService{
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        decodeJson(requestJson(url));
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        String dataJson = requestJson(url);
+
+        Intent intentBroadcast = new Intent("DOWNLOAD_JSON");
+
+        Bundle bundle = new Bundle();
+
+        bundle.putString("json",dataJson);
+
+        intentBroadcast.putExtras(bundle);
+
+
+        sendBroadcast(intentBroadcast);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("sample notif")
+                .setContentText("ini bady notif")
+                .setAutoCancel(true);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        Logger.log("notify send!");
+        notificationManager.notify(89, notificationBuilder.build());
+
     }
 
     public String requestJson(String urlWeb){
