@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;
 
@@ -22,9 +22,10 @@ public class FirebaseActivity extends AppCompatActivity{
 
         @Override
         protected String doInBackground(String... params) {
-            //FirebaseApp.initializeApp(getApplicationContext());
-            //String token = FirebaseInstanceId.getInstance().getToken();
 
+            String token = FirebaseInstanceId.getInstance(FirebaseApp.initializeApp(getApplicationContext())).getToken();
+
+            /*
             InstanceID instanceID = InstanceID.getInstance(getApplicationContext());
             String token = null;
             try {
@@ -35,6 +36,7 @@ public class FirebaseActivity extends AppCompatActivity{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            */
             return "";
         }
 
